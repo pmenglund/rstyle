@@ -29,13 +29,19 @@ require "rstyle"
 
 trap("INT") { puts "Exiting..."; exit(0) }
 
-lines = []
-File.open(ARGV[0]) do |f|
-  lines = f.readlines
+errors = 0
+
+ARGV.each do |arg|
+  lines = []
+  File.open(arg) do |f|
+    lines = f.readlines
+  end
+
+  lines.each {|l| l.chomp!}
+  s = Rstyle.new(lines)
+  s.parse
+
+  errors += s.errors
 end
 
-lines.each {|l| l.chomp!}
-s = Rstyle.new(lines)
-s.parse
-
-exit 1 unless s.errors == 0
+exit 1 unless errors == 0
