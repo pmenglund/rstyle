@@ -74,4 +74,10 @@ describe Rstyle do
     @s.parse
     @s.errors.should == 1
   end
+
+  it "should warn about the use of for" do
+    @s.input = "  for x in @foo"
+    @s.parse
+    @s.warnings.should == 1
+  end
 end

@@ -15,11 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Rstyle
-  attr_reader :line_count, :errors
+  attr_reader :line_count, :errors, :warnings
 
   def initialize(array=nil)
     @line_count = 0
     @errors = 0
+    @warnings = 0
     @array = array
   end
 
@@ -56,6 +57,9 @@ class Rstyle
         error "methods should be in snake_case"  if method =~ /[A-Z]/
       end
 
+      check(/^\s*for/) do
+        warning "don't use for unless you know what you are doing"
+      end
     end
   end
 
@@ -74,6 +78,11 @@ class Rstyle
   def error(message)
     @errors += 1
     e(message + "\n\t" + @oline)
+  end
+
+  def warning(message)
+    @warnings += 1
+    e "warning: #{message}"
   end
 
   def e(message)
