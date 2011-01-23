@@ -24,60 +24,50 @@ describe Rstyle do
   end
 
   it "should read the correct number of lines" do
-    @s.input = %w(a b c)
-    @s.parse
+    @s.parse %w(a b c)
     @s.line_count.should == 3
     @s.errors.should == 0
   end
 
   it "should catch lines with only whitespace in them" do
-    @s.input = " "
-    @s.parse
+    @s.parse [" "]
     @s.errors.should == 1
   end
 
   it "should catch lines with tabs" do
-    @s.input = "\tx"
-    @s.parse
+    @s.parse ["\tx"]
     @s.errors.should == 1
   end
 
   it "should catch whitespace at the end of a line" do
-    @s.input = "x "
-    @s.parse
+    @s.parse ["x "]
     @s.errors.should == 1
   end
 
   it "should catch methods not in snake_case" do
-    @s.input = ["def FooBar", "def foo_bar"]
-    @s.parse
+    @s.parse(["def FooBar", "def foo_bar"])
     @s.errors.should == 1
   end
 
   it "should catch , without spaces after" do
-    @s.input = ["func(a,b)", "func(a, b)"]
-    @s.parse
+    @s.parse ["func(a,b)", "func(a, b)"]
     @s.errors.should == 1
   end
 
   it "should catch spaces after ( & [ and before ) & ]" do
-    @s.input = [
+    @s.parse [
         "func( x)", "func(x )", "func(x)",
-        "[ a, b]", "[a, b ]", "[a, b]"
-    ]
-    @s.parse
+        "[ a, b]", "[a, b ]", "[a, b]"]
     @s.errors.should == 4
   end
 
   it "should catch lines longer than 80 characters" do
-    @s.input = ["x" * 81, "y" * 80]
-    @s.parse
+    @s.parse ["x" * 81, "y" * 80]
     @s.errors.should == 1
   end
 
   it "should warn about the use of for" do
-    @s.input = "  for x in @foo"
-    @s.parse
+    @s.parse ["  for x in @foo"]
     @s.warnings.should == 1
   end
 end

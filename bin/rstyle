@@ -16,7 +16,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-gemfile = File.expand_path("../../Gemfile", __FILE__)
+if File.symlink?($0) && $0 =~ /pre-commit/
+  prog = %x{pwd}.chomp + "/.git/hooks/" + File.readlink($0)
+  base = File.dirname File.expand_path(prog)
+elsif
+  base = File.expand_path(File.dirname($0))
+else
+  exit 2
+end
+
+gemfile = File.expand_path("/../Gemfile", base)
 
 if File.exists?(gemfile)
   ENV["BUNDLE_GEMFILE"] = gemfile
@@ -24,24 +33,27 @@ if File.exists?(gemfile)
   require "bundler/setup"
 end
 
-$:.unshift(File.expand_path("../../lib", __FILE__))
+$:.unshift(File.expand_path("../lib", base))
 require "rstyle"
 
 trap("INT") { puts "Exiting..."; exit(0) }
 
-errors = 0
+s = Rstyle.new
 
-ARGV.each do |arg|
-  lines = []
-  File.open(arg) do |f|
-    lines = f.readlines
+if ARGV.length == 0
+  files = []
+  %x{git status --short --untracked-files=no 2>&1}.split("\n").each do |line|
+    unless $? == 0
+      $stderr.puts "failed to execute 'git status'"
+      exit 2
+    end
+    if line =~ /^[MA].\s(.+)\S*$/
+      files << $1
+    end
   end
-
-  lines.each {|l| l.chomp!}
-  s = Rstyle.new(lines)
-  s.parse
-
-  errors += s.errors
+  s.source(files)
+else
+  s.source(ARGV)
 end
 
-exit 1 unless errors == 0
+exit 1 unless s.errors == 0

@@ -17,27 +17,37 @@
 class Rstyle
   attr_reader :line_count, :errors, :warnings
 
-  def initialize(array=nil)
-    @line_count = 0
+  def initialize
     @errors = 0
     @warnings = 0
-    @array = array
   end
 
-  def input=(s)
-    @array = s.kind_of?(Array) ? s : s.split("\n")
+  def source(files)
+    files.each do |file|
+      @file = file
+      File.open(file) do |f|
+        lines = []
+        begin
+          while lines << f.readline.chomp; end
+        rescue EOFError
+          # do nothing, it is expected
+        end
+        parse(lines)
+      end
+    end
   end
 
-  def parse
-    @array.each do |line|
+  def parse(lines)
+    @line_count = 0
+    lines.each_with_index do |line, i|
       @oline = @line = line
       @line_count += 1
 
       # strip out text from strings
-      @line = @line.gsub(/ *"([^"]+)"/, "")
+      @line = @line.gsub(/"([^"]+)"/, "\"\"")
 
       # strip out text from regexps
-      @line = @line.gsub(/ *\/([^\/]+)\//, "")
+      @line = @line.gsub(/\/([^\/]+)\//, "//")
 
       if @oline.length > 80
         error "line longer than 80 characters"
@@ -77,7 +87,7 @@ class Rstyle
 
   def error(message)
     @errors += 1
-    e(message + "\n\t" + @oline)
+    e(message)
   end
 
   def warning(message)
@@ -86,6 +96,7 @@ class Rstyle
   end
 
   def e(message)
+    $stderr.printf("%s: ", @file) if @file
     $stderr.puts "#{@line_count}: #{message}"
   end
 end
