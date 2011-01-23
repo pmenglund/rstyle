@@ -24,15 +24,17 @@ class Rstyle
 
   def source(files)
     files.each do |file|
-      @file = file
-      File.open(file) do |f|
-        lines = []
-        begin
-          while lines << f.readline.chomp; end
-        rescue EOFError
-          # do nothing, it is expected
+      if file =~ /\.rb/
+        @file = file
+        File.open(file) do |f|
+          lines = []
+          begin
+            while lines << f.readline.chomp; end
+          rescue EOFError
+            # do nothing, it is expected
+          end
+          parse(lines)
         end
-        parse(lines)
       end
     end
   end
