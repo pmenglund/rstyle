@@ -24,18 +24,24 @@ class Rstyle
 
   def source(files)
     files.each do |file|
-      if file =~ /\.rb/
-        @file = file
-        File.open(file) do |f|
-          lines = []
-          begin
-            while lines << f.readline.chomp; end
-          rescue EOFError
-            # do nothing, it is expected
-          end
-          parse(lines)
-        end
+      if File.directory?(file)
+        source Dir.glob("#{file}/**/*.rb")
+      elsif file =~ /\.rb/
+        read_file(file)
       end
+    end
+  end
+
+  def read_file(file)
+    @file = file
+    File.open(file) do |f|
+      lines = []
+      begin
+        while lines << f.readline.chomp; end
+      rescue EOFError
+        # do nothing, it is expected
+      end
+      parse(lines)
     end
   end
 
@@ -98,7 +104,7 @@ class Rstyle
   end
 
   def e(message)
-    $stderr.printf("%s: ", @file) if @file
+    $stderr.printf("%s: ", @file)  if @file
     $stderr.puts "#{@line_count}: #{message}"
   end
 end
