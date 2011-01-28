@@ -71,6 +71,9 @@ class Rstyle
 
       check "space after ( and [ or before ) and ]", /[\(\[]\s+|\s+[\)\]]/
 
+      check "use two spaces before statement modifiers",
+          /\S+( | {3,})(if|unless|until|rescue|while)/
+
       check(/\s*def (\S+)/) do |method|
         error "methods should be in snake_case"  if method =~ /[A-Z]/
       end
