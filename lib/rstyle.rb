@@ -24,17 +24,16 @@ class Rstyle
   end
 
   def parse_options(options)
-    opts = {}
-    opts[:default] = true
     Trollop::options(options) do
-      opt :empty_line, "empty lines", opts.dup
-      opt :tabs, "line contains tab(s)", opts.dup
-      opt :ends_with_whitespace, "line ends with whitespace", opts.dup
-      opt :no_space_after_comma, "no space after ','", opts.dup
-      opt :space_after, "space after ( and [ or before ) and ]", opts.dup
-      opt :two_spaces, "use two spaces before statement modifiers", opts.dup
-      opt :snake_case, "methods should be in snake_case", opts.dup
-      opt :no_for, "don't use for unless you know what you are doing", opts.dup
+      opt :all, "enable all options"
+      opt :empty_line, "empty lines"
+      opt :tabs, "line contains tab(s)"
+      opt :ends_with_whitespace, "line ends with whitespace"
+      opt :no_space_after_comma, "no space after ','"
+      opt :space_after, "space after ( and [ or before ) and ]"
+      opt :two_spaces, "use two spaces before statement modifiers"
+      opt :snake_case, "methods should be in snake_case"
+      opt :no_for, "don't use for unless you know what you are doing"
       opt :line_length, "line length", :default => 80
     end
   end
@@ -105,7 +104,7 @@ class Rstyle
   private
 
   def check(name, *args)
-    if @options[name]
+    if @options[name] || @options[:all]
       if @line =~ args[args.length - 1]
         if block_given?
           yield($1)

@@ -36,7 +36,15 @@ require "rstyle"
 
 trap("INT") { puts "Exiting..."; exit(0) }
 
-s = Rstyle.new(ARGV)
+RSTYLE_FILE = ".rstyle"
+lines = []
+if File.exist?(RSTYLE_FILE)
+  File.open(RSTYLE_FILE) do |f|
+    lines = f.readlines.collect {|l| l.chomp}
+  end
+end
+
+s = Rstyle.new([lines, ARGV].flatten)
 
 if ARGV.length == 0
   files = []
