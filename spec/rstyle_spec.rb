@@ -18,7 +18,7 @@ require 'rstyle'
 describe Rstyle do
 
   before(:each) do
-    @s = Rstyle.new
+    @s = Rstyle.new([])
     @s.stub(:e)
   end
 

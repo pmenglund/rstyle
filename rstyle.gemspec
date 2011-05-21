@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_runtime_dependency "highline"
+  s.add_runtime_dependency "trollop"
 
   s.add_development_dependency "rspec"
 end

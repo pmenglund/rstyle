@@ -12,12 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "trollop"
+
 class Rstyle
   attr_reader :line_count, :errors, :warnings
 
-  def initialize
+  def initialize(options)
+    @options = parse_options(options)
     @errors = 0
     @warnings = 0
+  end
+
+  def parse_options(options)
+    opts = {}
+    opts[:default] = true
+    Trollop::options(options) do
+      opt :empty_line, "empty lines", opts.dup
+      opt :tabs, "line contains tab(s)", opts.dup
+      opt :ends_with_whitespace, "line ends with whitespace", opts.dup
+      opt :no_space_after_comma, "no space after ','", opts.dup
+      opt :space_after, "space after ( and [ or before ) and ]", opts.dup
+      opt :two_spaces, "use two spaces before statement modifiers", opts.dup
+      opt :snake_case, "methods should be in snake_case", opts.dup
+      opt :no_for, "don't use for unless you know what you are doing", opts.dup
+      opt :line_length, "line length", :default => 80
+    end
   end
 
   def source(files)
@@ -55,28 +74,29 @@ class Rstyle
       # strip out text from regexps
       @line = @line.gsub(/\/([^\/]+)\//, "//")
 
-      if @oline.length > 80
-        error "line longer than 80 characters"
+      if @oline.length > @options[:line_length]
+        error "line longer than #{@options[:line_length]} characters"
       end
 
-      check "empty line contains whitespace", /^\s+$/
+      check :empty_line, "empty line contains whitespace", /^\s+$/
 
-      check "line contains tab(s)", /\t/
+      check :tabs, "line contains tab(s)", /\t/
 
-      check "line ends with whitespace", /\S+\s+$/
+      check :ends_with_whitespace, "line ends with whitespace", /\S+\s+$/
 
-      check "no space after ,", /,\S+/
+      check :no_space_after_comma, "no space after ,", /,\S+/
 
-      check "space after ( and [ or before ) and ]", /[\(\[]\s+|\s+[\)\]]/
+      check :space_after, "space after ( and [ or before ) and ]",
+            /[\(\[]\s+|\s+[\)\]]/
 
-      check "use two spaces before statement modifiers",
-          /\S+( | {3,})(if|unless|until|rescue|while)/
+      check :two_spaces, "use two spaces before statement modifiers",
+            /\S+( | {3,})(if|unless|until|rescue|while)/
 
-      check(/\s*def (\S+)/) do |method|
+      check(:snake_case, /\s*def (\S+)/) do |method|
         error "methods should be in snake_case"  if method =~ /[A-Z]/
       end
 
-      check(/^\s*for/) do
+      check(:no_for, /^\s*for/) do
         warning "don't use for unless you know what you are doing"
       end
     end
@@ -84,12 +104,14 @@ class Rstyle
 
   private
 
-  def check(*args)
-    if @line =~ args[args.length - 1]
-      if block_given?
-        yield($1)
-      else
-        error(args[0])
+  def check(name, *args)
+    if @options[name]
+      if @line =~ args[args.length - 1]
+        if block_given?
+          yield($1)
+        else
+          error(args[0])
+        end
       end
     end
   end
