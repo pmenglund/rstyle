@@ -1,9 +1,4 @@
-source :rubygems
+source "http://rubygems.org"
 
-gem "highline"
-
-group :test do
-	gem "rspec"
-  # note that the test-unit gem is needed so RubyMine won't complain
-  gem "test-unit"
-end
+# Specify your gem's dependencies in rstyle.gemspec
+gemspec

@@ -27,7 +27,8 @@ The style checker looks for the following:
 * no space after ,
 * space after ( and [ or before ) and ]
 * methods should be in snake_case
+* use two spaces before statement modifiers
 
 It will also issue warnings for the following:
 
-* don't use for unless you know what you are doing
+* don't use `for` unless you know what you are doing
