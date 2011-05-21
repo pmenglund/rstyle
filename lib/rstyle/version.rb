@@ -13,5 +13,5 @@
 # limitations under the License.
 
 module Rstyle
-  VERSION = "0.0.1"
+  VERSION = "0.0.2"
 end
