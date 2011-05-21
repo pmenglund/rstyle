@@ -53,7 +53,7 @@ if ARGV.length == 0
       $stderr.puts "failed to execute 'git status'"
       exit 2
     end
-    if line =~ /^[MA].\s(.+)\S*$/
+    if line =~ /^\s*[MA].*\s(.+\.rb)\S*$/
       files << $1
     end
   end
