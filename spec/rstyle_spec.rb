@@ -18,7 +18,7 @@ require 'rstyle'
 describe Rstyle do
 
   before(:each) do
-    @s = Rstyle.new([])
+    @s = Rstyle.new(["--all"])
     @s.stub(:e)
   end
 
