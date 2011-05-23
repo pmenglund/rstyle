@@ -70,6 +70,16 @@ describe Rstyle do
     @s.errors.should == 0
   end
 
+  it "should ignore errors when overriden" do
+    @s.parse ["# RSTYLE: snake_case", "def FooBar"]
+    @s.errors.should == 0
+  end
+
+  it "should ignore errors when overriden" do
+    @s.parse ["# RSTYLE: tabs", "a\tb"]
+    @s.errors.should == 0
+  end
+
   it "should warn about the use of for" do
     @s.parse ["  for x in @foo"]
     @s.warnings.should == 1

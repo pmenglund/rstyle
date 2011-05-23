@@ -21,6 +21,7 @@ class Rstyle
     @options = parse_options(options)
     @errors = 0
     @warnings = 0
+    @skip = nil
   end
 
   def parse_options(options)
@@ -68,40 +69,51 @@ class Rstyle
       @line_count += 1
 
       # strip out text from strings
+      # TODO include other forms of strings
       @line = @line.gsub(/"([^"]+)"/, "\"\"")
 
       # strip out text from regexps
+      # TODO include other regexps
       @line = @line.gsub(/\/([^\/]+)\//, "//")
 
       max_len = @options[:line_length]
-      if @oline.length > max_len
-        error "line longer than #{max_len} characters (#{@oline.length})"
+      begin
+        if @oline.length > max_len
+          error "line longer than #{max_len} characters (#{@oline.length})"
+        end
+
+        check :empty_line, "empty line contains whitespace", /^\s+$/
+
+        check :tabs, "line contains tab(s)", /\t/
+
+        check :ends_with_whitespace, "line ends with whitespace", /\S+\s+$/
+
+        # skip all check below if in a comment
+        next  if @line =~ /^\s*#/
+
+        check :no_space_after_comma, "no space after ,", /,\S+/
+
+        check :space_after, "space after ( and [ or before ) and ]",
+              /[\(\[]\s+|\s+[\)\]]/
+
+        check :two_spaces, "use two spaces before statement modifiers",
+              /\S+( | {3,})(if|unless|until|rescue|while)/
+
+        check(:snake_case, /\s*def (\S+)/) do |method|
+          error "methods should be in snake_case"  if method =~ /[A-Z]/
+        end
+
+        check(:no_for, /^\s*for/) do
+          warning "don't use for unless you know what you are doing"
+        end
+      ensure
+        if @line =~ /^\s*#\s*RSTYLE:\s*(.+)$/
+          @skip = $1.to_sym
+        else
+          @skip = nil
+        end
       end
 
-      check :empty_line, "empty line contains whitespace", /^\s+$/
-
-      check :tabs, "line contains tab(s)", /\t/
-
-      check :ends_with_whitespace, "line ends with whitespace", /\S+\s+$/
-
-      # skip all check below if in a comment
-      next  if @line =~ /^\s*#/
-
-      check :no_space_after_comma, "no space after ,", /,\S+/
-
-      check :space_after, "space after ( and [ or before ) and ]",
-            /[\(\[]\s+|\s+[\)\]]/
-
-      check :two_spaces, "use two spaces before statement modifiers",
-            /\S+( | {3,})(if|unless|until|rescue|while)/
-
-      check(:snake_case, /\s*def (\S+)/) do |method|
-        error "methods should be in snake_case"  if method =~ /[A-Z]/
-      end
-
-      check(:no_for, /^\s*for/) do
-        warning "don't use for unless you know what you are doing"
-      end
     end
   end
 
@@ -110,9 +122,9 @@ class Rstyle
   def check(name, *args)
     if @options[name] || @options[:all]
       if @line =~ args[args.length - 1]
-        if block_given?
+        if block_given? && name != @skip
           yield($1)
-        else
+        elsif name != @skip
           error(args[0])
         end
       end
