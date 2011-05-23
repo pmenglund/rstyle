@@ -65,6 +65,11 @@ describe Rstyle do
     @s.errors.should == 1
   end
 
+  it "should ignore , with space in comments" do
+    @s.parse [" # x , y"]
+    @s.errors.should == 0
+  end
+
   it "should warn about the use of for" do
     @s.parse ["  for x in @foo"]
     @s.warnings.should == 1

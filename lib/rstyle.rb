@@ -84,6 +84,9 @@ class Rstyle
 
       check :ends_with_whitespace, "line ends with whitespace", /\S+\s+$/
 
+      # skip all check below if in a comment
+      next  if @line =~ /^\s*#/
+
       check :no_space_after_comma, "no space after ,", /,\S+/
 
       check :space_after, "space after ( and [ or before ) and ]",
