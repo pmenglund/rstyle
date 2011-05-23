@@ -17,10 +17,8 @@
 if File.symlink?($0) && $0 =~ /pre-commit/
   prog = %x{pwd}.chomp + "/.git/hooks/" + File.readlink($0)
   base = File.dirname File.expand_path(prog)
-elsif
-  base = File.expand_path(File.dirname($0))
 else
-  exit 2
+  base = File.expand_path(File.dirname($0))
 end
 
 gemfile = File.expand_path("/../Gemfile", base)
