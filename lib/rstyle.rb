@@ -73,8 +73,9 @@ class Rstyle
       # strip out text from regexps
       @line = @line.gsub(/\/([^\/]+)\//, "//")
 
-      if @oline.length > @options[:line_length]
-        error "line longer than #{@options[:line_length]} characters"
+      max_len = @options[:line_length]
+      if @oline.length > max_len
+        error "line longer than #{max_len} characters (#{@oline.length})"
       end
 
       check :empty_line, "empty line contains whitespace", /^\s+$/
