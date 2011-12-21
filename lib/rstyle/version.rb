@@ -1,4 +1,4 @@
-# Copyright 2010 Code Nursery AB
+# Copyright 2010, 2011 Martin Englund
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,5 +13,5 @@
 # limitations under the License.
 
 module Rstyle
-  VERSION = "0.0.2"
+  VERSION = "0.0.3"
 end
