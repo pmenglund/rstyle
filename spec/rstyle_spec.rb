@@ -1,4 +1,4 @@
-# Copyright 2010 Code Nursery AB
+# Copyright 2011 Martin Englund
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
 require 'spec_helper'
 require 'rstyle'
 
-describe Rstyle do
+describe RStyle do
 
   before(:each) do
-    @s = Rstyle.new(["--all"])
+    @s = RStyle.new(["--all"])
     @s.stub(:e)
   end
 

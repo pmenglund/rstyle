@@ -1,4 +1,4 @@
-# Copyright 2010 Code Nursery AB
+# Copyright 2010, 2011 Martin Englund
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 
 require "trollop"
 
-class Rstyle
+class RStyle
   attr_reader :line_count, :errors, :warnings
 
   def initialize(options)
