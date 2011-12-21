@@ -5,17 +5,13 @@ h1. RStyle
 Implements checks for some of the "Ruby":https://github.com/chneukirchen/styleguide/blob/master/RUBY-STYLE style guide items.
 
 This tool is meant to be use as a pre-commit hook for <code>git</code>, to ensure the code is properly formatted. Run the following
-<pre>
-cd .git/hooks
-ln -s /path/to/bin/rstyle
-</pre>
+<pre>cd .git/hooks
+ln -s /path/to/bin/rstyle</pre>
 
 and you'll have to be compliant with the <code>rstyle</code> checks to be able to commit code to the repository.
 
 It can also be used to check one or more ruby files in standalone mode:
-<pre>
-    rstyle /path/to/rubyfile.rb
-</pre>
+<pre>rstyle /path/to/rubyfile.rb</pre>
 
 h1. Style checks
 
